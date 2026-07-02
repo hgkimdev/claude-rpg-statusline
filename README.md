@@ -1,5 +1,7 @@
 # Claude Code RPG Statusline
 
+[![BuyMeACoffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/hgkim)
+
 An RPG-themed statusline for [Claude Code](https://claude.ai/code) that turns your rate limits into game stats.
 
 ```
