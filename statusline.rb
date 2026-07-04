@@ -15,8 +15,7 @@ module C
   BRIGHT_ORANGE  = "\e[38;2;208;135;112m"  # Nord12 #D08770 aurora orange
 end
 
-EXP_DATA_FILE   = File.expand_path("~/.claude/exp_data.json")
-LEVEL_THRESHOLD = 50.0
+EXP_DATA_FILE = File.expand_path("~/.claude/exp_data.json")
 
 def load_exp_data
   JSON.parse(File.read(EXP_DATA_FILE))
@@ -91,10 +90,11 @@ if seven_d
   if exp_pct > last_exp_pct
     accumulated  += (exp_pct - last_exp_pct)
     last_exp_pct  = exp_pct
-    while accumulated >= LEVEL_THRESHOLD
-      level     += 1
-      accumulated -= LEVEL_THRESHOLD
-      leveled_up  = true
+    # 레벨 N→N+1 임계값: N+1 (%), 만렙 100
+    while level < 100 && accumulated >= (level + 1)
+      accumulated -= (level + 1)
+      level       += 1
+      leveled_up   = true
     end
   elsif exp_pct < last_exp_pct
     # 주간 리셋 감지 — 차감 없이 기준점만 갱신
@@ -108,11 +108,14 @@ if seven_d
   })
 
   exp_pct_display = exp_pct.round.clamp(0, 100)
-  level_str = leveled_up ? "Lv.#{level} ↑" : "Lv.#{level}"
-  wk_part   = "#{C::BRIGHT_YELLOW}⭐ #{C::BRIGHT_ORANGE}#{C::BOLD}#{level_str}#{C::RESET} #{C::BRIGHT_YELLOW}#{C::BOLD}#{exp_pct_display}%#{C::RESET} #{C::BRIGHT_YELLOW}#{bar(exp_pct_display)}#{C::RESET}"
+  icon      = level >= 100 ? "👑" : level >= 50 ? "⭐" : "✨"
+  label     = level >= 100 ? "Lv.100" : leveled_up ? "Lv.#{level} ↑" : "Lv.#{level}"
+  wk_part   = "#{icon} #{C::BRIGHT_ORANGE}#{C::BOLD}#{label}#{C::RESET} #{C::BRIGHT_YELLOW}#{C::BOLD}#{exp_pct_display}%#{C::RESET} #{C::BRIGHT_YELLOW}#{bar(exp_pct_display)}#{C::RESET}"
 else
   # seven_day 데이터 없음 — 레벨만 표시, 누적하지 않음
-  wk_part = "#{C::BRIGHT_YELLOW}⭐ #{C::BRIGHT_ORANGE}#{C::BOLD}Lv.#{level}#{C::RESET} #{C::DIM}---#{C::RESET}"
+  icon    = level >= 100 ? "👑" : level >= 50 ? "⭐" : "✨"
+  label   = level >= 100 ? "Lv.100" : "Lv.#{level}"
+  wk_part = "#{icon} #{C::BRIGHT_ORANGE}#{C::BOLD}#{label}#{C::RESET} #{C::DIM}---#{C::RESET}"
 end
 
 # --- Model badge ---

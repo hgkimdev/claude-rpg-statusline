@@ -5,7 +5,7 @@
 An RPG-themed statusline for [Claude Code](https://claude.ai/code) that turns your rate limits into game stats.
 
 ```
-(0h 42m) ❤️ HP 87% ■■■■■■■■□□  |  🔋 MP 63% ■■■■■■□□□□  |  ⭐ Lv.3 37% ■■■■□□□□□□  |  ⚔️ Sonnet4.6  |  🧭 my-project (main)
+(0h 42m) ❤️ HP 87% ■■■■■■■■□□  |  🔋 MP 63% ■■■■■■□□□□  |  ✨ Lv.3 37% ■■■■□□□□□□  |  ⚔️ Sonnet4.6  |  🧭 my-project (main)
 ```
 
 ## Stats
@@ -14,24 +14,33 @@ An RPG-themed statusline for [Claude Code](https://claude.ai/code) that turns yo
 |--------|------|--------|
 | ❤️ HP | 5-hour session limit remaining | Rate limit resets in `Xh Ym` |
 | 🔋 MP | Context window remaining | How much conversation space is left |
-| ⭐ EXP | 7-day weekly usage + Level | Accumulated across weekly resets |
+| ✨/⭐/👑 EXP | 7-day weekly usage + Level | Accumulated across weekly resets |
 | ⚔️ | Current model | Shortened display name |
 | 🧭 | Directory + git branch | Current working directory |
 
 ## Level System
 
-EXP accumulates from your 7-day usage percentage. Every **50 EXP** = **+1 Level**.
+EXP accumulates from your 7-day usage percentage. The threshold to reach the next level increases linearly — **level N requires N+1 EXP** to advance.
 
 - Weekly usage increases add to your cumulative EXP
 - Weekly resets don't subtract — progress carries over
 - Level-up shows `↑` on the next render, then disappears
 - Level data persists in `~/.claude/exp_data.json`
+- Max level: **100**
 
 **Example:**
 ```
-Week 1: use 40% → accumulated: 40
-Week 2 reset → use 20% → accumulated: 60 → Level up! → carry over: 10
+Week 1: use 40% → accumulated: 40 → levels up through Lv.1→2 (2), 2→3 (3), ... until threshold not met
+Week 2 reset → use 30% → accumulated grows further
 ```
+
+**Icon milestones:**
+
+| Level | Icon | |
+|-------|------|-|
+| 1–49  | ✨   | Sparkle |
+| 50–99 | ⭐   | Star |
+| 100   | 👑   | Crown (max level) |
 
 ## Requirements
 
@@ -58,12 +67,6 @@ cp statusline.rb ~/.claude/statusline-command.rb
 That's it. The statusline appears at the bottom of every Claude Code response.
 
 ## Customization
-
-Open `statusline.rb` and adjust these constants near the top:
-
-```ruby
-LEVEL_THRESHOLD = 50.0   # EXP required per level (default: 50)
-```
 
 **Colors** use the [Nord palette](https://www.nordtheme.com/) by default. Change any color in the `module C` block:
 
